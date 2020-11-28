@@ -1,8 +1,8 @@
 from django.contrib import admin
-from .models import Match, Version, Champion, Queue, Item
+from .models import Game, Version, Champion, Queue, Item
 
 # matches
-admin.site.register(Match)
+admin.site.register(Game)
 
 # ddragon
 admin.site.register(Version)

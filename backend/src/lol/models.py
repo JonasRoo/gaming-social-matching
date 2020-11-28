@@ -2,7 +2,7 @@ from typing import Dict, Union
 from django.db import models
 
 
-class Match(models.Model):
+class Game(models.Model):
     platform = models.CharField(max_length=16)
     game = models.BigIntegerField()
     champion = models.IntegerField()
@@ -20,7 +20,7 @@ class Match(models.Model):
         }
 
     @classmethod
-    def from_api_dict(cls, api_response: Dict[str, Union[str, int]]) -> "Match":
+    def from_api_dict(cls, api_response: Dict[str, Union[str, int]]) -> "Game":
         mapper = cls.api_model_map
         for k, v in mapper.items():
             api_response[v] = api_response.pop(k)
@@ -60,6 +60,12 @@ class Version(models.Model):
 
 # TODO(jonas): how do I dynamically "generate" the splash / sprite URL prefixes
 class Champion(models.Model):
+    """
+    Represents a champion within League of Legends.
+    Polled from the Riot API:
+        ->
+    """
+
     id = models.IntegerField(primary_key=True)
     version = models.CharField(max_length=64)
     name = models.CharField(max_length=64, blank=False, null=False)
