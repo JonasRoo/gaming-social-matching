@@ -13,8 +13,8 @@ class ChannelCreateView(generics.GenericAPIView):
         # TODO(jonas): handle icon fetching
         channel = Channel.objects.create(icon="")
         Participant.objects.create(user=request.user, channel=channel, is_active=True)
-        _data = {"success": True, "channel": {"id": channel.id, "icon": channel.icon}}
-        return Response(data=_data, status=status.HTTP_200_OK)
+        data = {"success": True, "channel": {"id": channel.id, "icon": channel.icon}}
+        return Response(data=data, status=status.HTTP_200_OK)
 
 
 class ChannelListView(generics.ListAPIView):

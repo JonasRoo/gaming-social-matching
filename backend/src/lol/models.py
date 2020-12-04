@@ -20,7 +20,7 @@ class Game(models.Model):
         }
 
     @classmethod
-    def from_api_dict(cls, api_response: Dict[str, Union[str, int]]) -> "Game":
+    def _from_api_dict(cls, api_response: Dict[str, Union[str, int]]) -> "Game":
         mapper = cls.api_model_map
         for k, v in mapper.items():
             api_response[v] = api_response.pop(k)
@@ -36,7 +36,7 @@ class Version(models.Model):
     summoner = models.CharField(max_length=64)
     champion = models.CharField(max_length=64)
     profile_icon = models.CharField(max_length=64)
-    mapv = models.CharField(max_length=64)
+    map = models.CharField(max_length=64)
     language = models.CharField(max_length=64)
     sticker = models.CharField(max_length=64)
 
@@ -47,11 +47,10 @@ class Version(models.Model):
     def api_model_map() -> Dict[str, str]:
         return {
             "profileicon": "profile_icon",
-            "map": "mapv",
         }
 
     @classmethod
-    def from_api_dict(cls, api_response: Dict[str, Union[str, int]]) -> "Version":
+    def _from_api_dict(cls, api_response: Dict[str, str]) -> "Version":
         mapper = cls.api_model_map
         for k, v in mapper.items():
             api_response[v] = api_response.pop(k)
@@ -67,7 +66,7 @@ class Champion(models.Model):
     """
 
     id = models.IntegerField(primary_key=True)
-    version = models.CharField(max_length=64)
+    version = models.ForeignKey(to=Version, to_field="champion", db_column="version")
     name = models.CharField(max_length=64, blank=False, null=False)
     title = models.CharField(max_length=128, blank=True, null=True)
     splash = models.URLField(blank=True, null=True)
@@ -85,7 +84,7 @@ class Queue(models.Model):
 
 class Item(models.Model):
     id = models.IntegerField(primary_key=True)
-    version = models.CharField(max_length=64)
+    version = models.ForeignKey(to=Version, to_field="item", db_column="version")
     name = models.CharField(max_length=128, blank=False, null=False)
     description = models.CharField(max_length=256, blank=True, null=True)
     icon = models.URLField(blank=True, null=True)
