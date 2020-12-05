@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "drf_spectacular",
     "messaging",
+    "lol",
 ]
 
 MIDDLEWARE = [
@@ -130,3 +131,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = "/static/"
+
+
+# V--------------- CELERY ---------------V
+CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
