@@ -23,10 +23,10 @@ def fetch_and_save_version(
 
 
 def fetch_and_write_champs(watcher: LolWatcher, version: Version):
-    champs_resp = watcher.data_dragon.champions(version=version.champion)
-    for raw_champ_data in champs_resp["data"].values():
+    api_response = watcher.data_dragon.champions(version=version.champion)
+    for raw_champ_data in api_response["data"].values():
         champ_dict = Champion._from_single_champ_dict(raw_champ_data, mode="dict")
-        # TODO(jonas): this is a little less ugly.
+        # TODO(jonas): this is a little less ugly
         unique_checks = {"id": champ_dict["id"], "version": champ_dict["version"]}
         remaining_attrs = {
             k: v for k, v in champ_dict.items() if k not in unique_checks
