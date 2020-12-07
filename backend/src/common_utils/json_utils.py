@@ -1,23 +1,6 @@
 from typing import Dict, Any
 import collections
 
-d = {
-    "a": "value",
-    "b": {
-        "c": "value",
-        "d": {
-            "e": "value",
-        },
-        "f": "ccc",
-    },
-}
-
-n = {
-    "a": "value",
-    "b-c": "value",
-    "b-c-d-e": "value",
-}
-
 
 # from: https://stackoverflow.com/questions/6027558/flatten-nested-dictionaries-compressing-keys
 def flatten_dict_by_joining(
