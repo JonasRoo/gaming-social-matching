@@ -1,11 +1,11 @@
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 import collections
 
 
 # from: https://stackoverflow.com/questions/6027558/flatten-nested-dictionaries-compressing-keys
 def flatten_dict_by_joining(
-    d: collections.Mapping, parent_key: str = "", sep: str = "-"
-) -> Dict[str, Any]:
+    d: collections.Mapping, parent_key: Optional[str] = "", sep: Optional[str] = "-"
+) -> collections.Mapping:
     items = []
     for k, v in d.items():
         new_k = sep.join([parent_key, k]) if parent_key else k
