@@ -1,8 +1,9 @@
 from typing import Dict, Union
 from datetime import datetime, timedelta
+from numbers import Number
 import warnings
 from django.db import models
-from common_utils import json_utils
+from common_utils import json_utils, time_utils
 
 
 class Game(models.Model):
@@ -11,12 +12,16 @@ class Game(models.Model):
     champion = models.IntegerField()
     queue = models.IntegerField()
     season = models.IntegerField()
-    timestamp = models.BigIntegerField()
+    timestamp = models.DateTimeField()
     role = models.CharField(max_length=32, blank=True, null=True)
     lane = models.CharField(max_length=32, blank=True, null=True)
 
-    @property
-    def api_model_map() -> Dict[str, str]:
+    def pre_save(self, *args, **kwargs):
+        if isinstance(self.timestamp, Number):
+            self.timestamp = time_utils.get_tz_aware_dt_from_timestamp(self.timestamp)
+
+    @classmethod
+    def api_model_map(cls) -> Dict[str, str]:
         return {
             "platformId": "platform",
             "gameId": "game",
@@ -24,7 +29,7 @@ class Game(models.Model):
 
     @classmethod
     def _from_api_dict(cls, api_response: Dict[str, Union[str, int]]) -> "Game":
-        mapper = cls.api_model_map
+        mapper = cls.api_model_map()
         for k, v in mapper.items():
             api_response[v] = api_response.pop(k)
         return cls(**api_response)
@@ -86,7 +91,6 @@ class Version(models.Model):
         return version
 
 
-# TODO(jonas): how to dynamically "generate" the splash / sprite URL prefixes
 class Champion(models.Model):
     """
     Represents a champion within League of Legends.
@@ -155,14 +159,37 @@ class Champion(models.Model):
             self.splash = self._construct_full_splash_url(version)
             self.loading = self._construct_full_loading_url(version)
             self.sprite = self._construct_full_square_url(version)
-        super(Champion, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class Queue(models.Model):
+    """
+    Represents a queue type within League of Legends.
+    Examples:
+        > 5x5 RANKED_SOLO_DUO_SR
+        > 5x5 ARAM
+    Polled from the Riot API:
+        -> http://static.developer.riotgames.com/docs/lol/queues.json
+    """
+
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=64, blank=False, null=False)
     description = models.CharField(max_length=128, blank=True, null=True)
     notes = models.CharField(max_length=128, blank=True, null=True)
+
+    @classmethod
+    def _get_api_model_map(cls) -> Dict[str, str]:
+        return {
+            "queueId": "id",
+            "map": "name",
+        }
+
+    @classmethod
+    def _from_api_dict(cls, single_queue_map: Dict[str, str]) -> "Queue":
+        mapper = cls._get_api_model_map()
+        for k, v in mapper.items():
+            single_queue_map[v] = single_queue_map.pop(k)
+        return cls(**single_queue_map)
 
 
 class Item(models.Model):
